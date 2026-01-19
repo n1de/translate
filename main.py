@@ -108,7 +108,7 @@ def translate_text(text):
 
 @dp.message(Command("start"))
 async def start_cmd(message: types.Message):
-    await message.answer("Я готовий! Надішли мені текст для перекладу або використай /list.")
+    await message.answer("ꛤꛣꛠ ꚡꚥ ꚠꚣꚤꚨꚧ, ПИШИ ТЕКСТ АБО ВИКОРИСТАЙ /list.")
 
 @dp.message(Command("add_word"))
 async def add_word(message: types.Message):
@@ -121,7 +121,7 @@ async def add_word(message: types.Message):
 
 @dp.message(Command("list"))
 async def list_words(message: types.Message):
-    if not db["words"]: return await message.answer("Словник порожній.")
+    if not db["words"]: return await message.answer("ТУТ ПУСТО ꚡꚥ")
     lines = [f"• **{k}** — {v}" for k, v in db["words"].items()]
     await message.answer("Словник:\n" + "\n".join(lines[:50]), parse_mode="Markdown")
 
@@ -139,3 +139,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
