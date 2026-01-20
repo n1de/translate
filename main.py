@@ -5,6 +5,7 @@ import pymorphy3
 from thefuzz import process
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
+from aiohttp import web
 
 # 1. Отримання токена (МАЄ БУТИ НА ПОЧАТКУ)
 TOKEN = os.getenv("BOT_TOKEN")
@@ -134,9 +135,33 @@ async def handle_all_messages(message: types.Message):
         result = translate_text(message.text)
         await message.answer(result)
 
+# Функція, яка відповідає "OK" для Render
+async def handle_render_ping(request):
+    return web.Response(text="Bot is running!")
+
 async def main():
+    # 1. --- БЛОК ДЛЯ RENDER (запускаємо веб-сервер) ---
+    app = web.Application()
+    app.router.add_get("/", handle_render_ping)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    
+    # Отримуємо порт від Render або використовуємо 8080 локально
+    port = int(os.getenv("PORT", 8080)) 
+    site = web.TCPSite(runner, "0.0.0.0", port)
+    
+    print(f"Запуск веб-сервера на порту {port}...")
+    await site.start()
+    # -----------------------------------------------
+
+    # 2. --- ЗАПУСК БОТА ---
+    print("Запуск бота...")
+    # Використовуємо polling для отримання повідомлень
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except (KeyboardInterrupt, SystemExit):
+        print("Бот зупинений")
 
